@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Comun\" />
     <Folder Include="Entidades\" />
   </ItemGroup>
 
