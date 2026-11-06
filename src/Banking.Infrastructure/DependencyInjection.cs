@@ -1,4 +1,7 @@
-﻿using Banking.Infrastructure.Persistencia;
+using Banking.Application.Abstracciones;
+using Banking.Infrastructure.Persistencia;
+using Banking.Infrastructure.Repositorios;
+using Banking.Infrastructure.Servicios;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -8,8 +11,8 @@ namespace Banking.Infrastructure;
 public static class DependencyInjection
 {
     /// <summary>
-    /// Registra la persistencia (EF Core + SQLite). Una ruta relativa en la cadena de conexión se
-    /// resuelve contra <paramref name="directorioBase"/>. Los repositorios se registran en la etapa 2.
+    /// Registra la persistencia (EF Core + SQLite), los repositorios, la unidad de trabajo y el reloj.
+    /// Una ruta relativa en la cadena de conexión se resuelve contra <paramref name="directorioBase"/>.
     /// </summary>
     public static IServiceCollection AgregarInfraestructura(
         this IServiceCollection services,
@@ -19,6 +22,14 @@ public static class DependencyInjection
         var cadenaResuelta = RutaBaseDatos.ResolverCadenaConexion(cadenaConexion, directorioBase);
 
         services.AddDbContext<BankingDbContext>(opciones => opciones.UseSqlite(cadenaResuelta));
+
+        services.AddScoped<IUnidadDeTrabajo, UnidadDeTrabajo>();
+        services.AddScoped<IClienteRepositorio, ClienteRepositorio>();
+        services.AddScoped<ICuentaBancariaRepositorio, CuentaBancariaRepositorio>();
+        services.AddScoped<ITransaccionRepositorio, TransaccionRepositorio>();
+        services.AddScoped<IAuditoriaRepositorio, AuditoriaRepositorio>();
+        services.AddScoped<ICatalogoRepositorio, CatalogoRepositorio>();
+        services.AddSingleton<IRelojSistema, RelojSistema>();
 
         return services;
     }

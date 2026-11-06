@@ -53,7 +53,11 @@ public static class FormatoNumeroCuenta
             DateTimeStyles.None,
             out _);
 
+        var consecutivo = numeroCuenta.Substring(InicioConsecutivo, LongitudConsecutivo);
+
+        // Solo se admiten 0001 a 9999: cuatro dígitos y un valor mínimo de 1.
         return fechaValida
-            && numeroCuenta.Substring(InicioConsecutivo, LongitudConsecutivo).All(char.IsAsciiDigit);
+            && consecutivo.All(char.IsAsciiDigit)
+            && int.Parse(consecutivo, CultureInfo.InvariantCulture) >= ConsecutivoMinimo;
     }
 }
