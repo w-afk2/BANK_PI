@@ -3,7 +3,7 @@ using Banking.Domain.Entidades;
 
 namespace Banking.Application.Servicios;
 
-/// <summary>Conversión de entidades a DTOs de respuesta.</summary>
+/// <summary>Conversión de entidades a DTOs de respuesta. Nunca se exponen entidades completas.</summary>
 internal static class Mapeos
 {
     /// <summary>Los ingresos mensuales del cliente siempre se expresan en córdobas.</summary>
@@ -59,4 +59,23 @@ internal static class Mapeos
             transaccion.SaldoResultante,
             cuenta.Moneda?.Codigo ?? string.Empty);
     }
+
+    public static AuditoriaRespuesta ARespuesta(this Auditoria auditoria)
+    {
+        return new AuditoriaRespuesta(
+            auditoria.Id,
+            auditoria.FechaHora,
+            auditoria.Accion.ToString(),
+            auditoria.Resultado.ToString(),
+            auditoria.Descripcion,
+            auditoria.ClienteId,
+            auditoria.CuentaBancaria?.NumeroCuenta);
+    }
+
+    public static CatalogoRespuesta ARespuesta(this TipoCuenta tipo) => new(tipo.Id, tipo.Nombre);
+
+    public static CatalogoRespuesta ARespuesta(this EstadoCuenta estado) => new(estado.Id, estado.Nombre);
+
+    public static MonedaRespuesta ARespuesta(this Moneda moneda) =>
+        new(moneda.Id, moneda.Codigo, moneda.Nombre, moneda.Simbolo);
 }

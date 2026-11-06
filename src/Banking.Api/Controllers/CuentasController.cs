@@ -33,4 +33,21 @@ public sealed class CuentasController(ICuentaBancariaServicio cuentaServicio) : 
     {
         return Ok(await cuentaServicio.ConsultarSaldoAsync(numeroCuenta, cancellationToken));
     }
+
+    /// <summary>
+    /// Cambia el estado de la cuenta (1 = Activa, 2 = Inactiva). Solicitar el estado actual
+    /// responde 200 sin modificar la cuenta ni registrar auditoría.
+    /// </summary>
+    [HttpPatch("{numeroCuenta}/estado")]
+    [ProducesResponseType<CuentaRespuesta>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<CuentaRespuesta>> CambiarEstado(
+        string numeroCuenta,
+        CambiarEstadoSolicitud solicitud,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await cuentaServicio.CambiarEstadoAsync(numeroCuenta, solicitud, cancellationToken));
+    }
 }

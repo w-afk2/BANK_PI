@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Banking.Api.Configuracion;
 using Banking.Api.Manejadores;
 using Banking.Application;
 using Banking.Infrastructure;
@@ -19,9 +20,9 @@ var cadenaConexion = builder.Configuration.GetConnectionString("Banking")
 builder.Services.AgregarAplicacion();
 builder.Services.AgregarInfraestructura(cadenaConexion, directorioProyecto);
 
-// Los enums (por ejemplo, Genero) se reciben y envían como texto: "Femenino".
 builder.Services
     .AddControllers()
+    .ConfigureApiBehaviorOptions(opciones => opciones.InvalidModelStateResponseFactory = RespuestaValidacion.Crear)
     .AddJsonOptions(opciones => opciones.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 // Manejo global de excepciones con respuestas ProblemDetails.
@@ -39,7 +40,7 @@ app.UseExceptionHandler();
 
 // Documentación interactiva solo en Development o en el entorno explícito "Evaluacion".
 // En cualquier otro entorno (por ejemplo, Production) Swagger no se publica.
-if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Evaluacion"))
+if (app.Environment.EsEntornoLocal())
 {
     app.MapOpenApi();
     app.UseSwaggerUI(opciones =>
@@ -50,6 +51,10 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Evaluacion
 }
 
 app.UseHttpsRedirection();
+
+// Interfaz web del operador (wwwroot/index.html). Solo consume la API; no accede a SQLite.
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.MapControllers();
 

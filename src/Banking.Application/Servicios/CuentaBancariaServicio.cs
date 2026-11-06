@@ -101,4 +101,41 @@ public sealed class CuentaBancariaServicio(
 
         return cuenta.ARespuestaSaldo();
     }
+
+    /// <summary>
+    /// Funcionalidad adicional: cambia la cuenta entre Activa e Inactiva.
+    /// Si se solicita el estado actual, responde con éxito sin modificar la cuenta ni auditar.
+    /// Un cambio real guarda el estado y su evento de auditoría en la misma transacción.
+    /// </summary>
+    public async Task<CuentaRespuesta> CambiarEstadoAsync(
+        string numeroCuenta,
+        CambiarEstadoSolicitud solicitud,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(solicitud);
+
+        var cuenta = await cuentas.ObtenerPorNumeroAsync(numeroCuenta, cancellationToken)
+            ?? throw new RecursoNoEncontradoException("La cuenta indicada no existe.");
+
+        var huboCambio = cuenta.CambiarEstado(solicitud.EstadoCuentaId);
+        if (!huboCambio)
+        {
+            return cuenta.ARespuesta();
+        }
+
+        auditorias.Agregar(Auditoria.RegistrarConEntidades(
+            AccionAuditoria.CambiarEstadoCuenta,
+            ResultadoAuditoria.Exitoso,
+            solicitud.EstadoCuentaId == EstadoCuenta.Ids.Activa ? "Cuenta activada." : "Cuenta inactivada.",
+            reloj.AhoraUtc,
+            cuenta: cuenta));
+
+        await unidadDeTrabajo.GuardarCambiosAsync(cancellationToken);
+
+        // Recarga sin seguimiento previo para devolver el nombre del nuevo estado.
+        unidadDeTrabajo.DescartarCambios();
+        var cuentaActualizada = await cuentas.ObtenerPorNumeroAsync(numeroCuenta, cancellationToken) ?? cuenta;
+
+        return cuentaActualizada.ARespuesta();
+    }
 }

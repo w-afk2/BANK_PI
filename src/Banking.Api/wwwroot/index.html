@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Banca Digital · Operador</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <header class="encabezado">
+    <div class="marca">
+      <span class="marca-logo" aria-hidden="true">B</span>
+      <div>
+        <h1>Banca Digital</h1>
+        <p>Consola del operador</p>
+      </div>
+    </div>
+    <div class="encabezado-acciones">
+      <span class="cuenta-actual" id="cuenta-actual" hidden></span>
+      <a class="enlace-swagger" href="/swagger" target="_blank" rel="noopener">Documentación API</a>
+    </div>
+  </header>
+
+  <nav class="pestanas" role="tablist" aria-label="Secciones">
+    <button class="pestana activa" role="tab" data-seccion="clientes" aria-selected="true">Clientes</button>
+    <button class="pestana" role="tab" data-seccion="cuentas" aria-selected="false">Cuentas</button>
+    <button class="pestana" role="tab" data-seccion="movimientos" aria-selected="false">Movimientos</button>
+    <button class="pestana" role="tab" data-seccion="auditoria" aria-selected="false">Auditoría</button>
+  </nav>
+
+  <main>
+    <!-- CLIENTES -->
+    <section class="seccion activa" id="seccion-clientes" role="tabpanel">
+      <div class="rejilla">
+        <form class="tarjeta" id="form-registrar-cliente" novalidate>
+          <h2>Registrar cliente</h2>
+          <div class="campos dos-columnas">
+            <label>Nombres <input name="nombres" autocomplete="off"></label>
+            <label>Primer apellido <input name="primerApellido" autocomplete="off"></label>
+            <label>Segundo apellido <span class="opcional">(opcional)</span> <input name="segundoApellido" autocomplete="off"></label>
+            <label>Fecha de nacimiento <input name="fechaNacimiento" type="date"></label>
+            <label>Género
+              <select name="genero">
+                <option value="">Seleccione…</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
+                <option value="PrefieroNoDecirlo">Prefiero no decirlo</option>
+              </select>
+            </label>
+            <label>Ingresos mensuales <span class="unidad">en córdobas (C$ NIO)</span>
+              <input name="ingresosMensuales" inputmode="decimal" autocomplete="off" placeholder="0.00">
+            </label>
+          </div>
+          <button type="submit">Registrar cliente</button>
+          <div class="resultado" aria-live="polite"></div>
+        </form>
+
+        <form class="tarjeta" id="form-perfil" novalidate>
+          <h2>Consultar perfil</h2>
+          <div class="campos">
+            <label>Id del cliente <input name="id" inputmode="numeric" autocomplete="off"></label>
+          </div>
+          <button type="submit">Consultar</button>
+          <div class="resultado" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <!-- CUENTAS -->
+    <section class="seccion" id="seccion-cuentas" role="tabpanel" hidden>
+      <div class="rejilla">
+        <form class="tarjeta" id="form-crear-cuenta" novalidate>
+          <h2>Crear cuenta</h2>
+          <div class="campos dos-columnas">
+            <label>Id del cliente <input name="clienteId" class="campo-cliente" inputmode="numeric" autocomplete="off"></label>
+            <label>Tipo de cuenta <select name="tipoCuentaId" data-catalogo="tipos"></select></label>
+            <label>Moneda <select name="monedaId" data-catalogo="monedas"></select></label>
+            <label>Saldo inicial <input name="saldoInicial" inputmode="decimal" autocomplete="off" placeholder="0.00"></label>
+          </div>
+          <button type="submit">Crear cuenta</button>
+          <div class="resultado" aria-live="polite"></div>
+        </form>
+
+        <form class="tarjeta" id="form-saldo" novalidate>
+          <h2>Consultar saldo</h2>
+          <div class="campos">
+            <label>Número de cuenta <input name="numeroCuenta" class="campo-cuenta" autocomplete="off" placeholder="ACC-AAAAMMDD-0001"></label>
+          </div>
+          <button type="submit">Consultar saldo</button>
+          <div class="resultado" aria-live="polite"></div>
+        </form>
+
+        <form class="tarjeta" id="form-estado" novalidate>
+          <h2>Cambiar estado</h2>
+          <div class="campos dos-columnas">
+            <label>Número de cuenta <input name="numeroCuenta" class="campo-cuenta" autocomplete="off" placeholder="ACC-AAAAMMDD-0001"></label>
+            <label>Nuevo estado <select name="estadoCuentaId" data-catalogo="estados"></select></label>
+          </div>
+          <button type="submit">Aplicar estado</button>
+          <div class="resultado" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <!-- MOVIMIENTOS -->
+    <section class="seccion" id="seccion-movimientos" role="tabpanel" hidden>
+      <div class="rejilla">
+        <form class="tarjeta" id="form-operacion" novalidate>
+          <h2>Depositar o retirar</h2>
+          <div class="campos dos-columnas">
+            <label>Número de cuenta <input name="numeroCuenta" class="campo-cuenta" autocomplete="off" placeholder="ACC-AAAAMMDD-0001"></label>
+            <label>Monto <span class="unidad">en la moneda de la cuenta</span>
+              <input name="monto" inputmode="decimal" autocomplete="off" placeholder="0.00">
+            </label>
+          </div>
+          <div class="botones">
+            <button type="submit" value="depositos">Depositar</button>
+            <button type="submit" value="retiros" class="secundario">Retirar</button>
+          </div>
+          <div class="resultado" aria-live="polite"></div>
+        </form>
+
+        <form class="tarjeta ancho-completo" id="form-historial" novalidate>
+          <h2>Historial de transacciones</h2>
+          <div class="campos en-linea">
+            <label>Número de cuenta <input name="numeroCuenta" class="campo-cuenta" autocomplete="off" placeholder="ACC-AAAAMMDD-0001"></label>
+            <button type="submit">Consultar historial</button>
+          </div>
+          <div class="resultado" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <!-- AUDITORÍA -->
+    <section class="seccion" id="seccion-auditoria" role="tabpanel" hidden>
+      <form class="tarjeta ancho-completo" id="form-auditoria" novalidate>
+        <h2>Auditoría</h2>
+        <p class="nota">Disponible solo en el entorno local de desarrollo o evaluación.</p>
+        <div class="campos en-linea">
+          <label>Desde <input name="desde" type="date"></label>
+          <label>Hasta <input name="hasta" type="date"></label>
+          <label>Resultado
+            <select name="resultado">
+              <option value="">Todos</option>
+              <option value="Exitoso">Exitoso</option>
+              <option value="Rechazado">Rechazado</option>
+            </select>
+          </label>
+          <label>Número de cuenta <input name="numeroCuenta" autocomplete="off" placeholder="Opcional"></label>
+          <button type="submit">Buscar</button>
+        </div>
+        <div class="resultado" aria-live="polite"></div>
+        <div class="paginacion" hidden>
+          <button type="button" class="secundario" data-pagina="anterior">Anterior</button>
+          <span class="paginacion-texto"></span>
+          <button type="button" class="secundario" data-pagina="siguiente">Siguiente</button>
+        </div>
+      </form>
+    </section>
+  </main>
+</body>
+</html>
