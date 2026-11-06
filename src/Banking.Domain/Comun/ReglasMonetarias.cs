@@ -8,7 +8,7 @@ namespace Banking.Domain.Comun
     /// absoluto máximo representable es long.MaxValue / 100.
     /// </summary>
 
-    internal class ReglasMonetarias
+    public class ReglasMonetarias
     {
         public const int DecimalesPermitidos = 2;
 

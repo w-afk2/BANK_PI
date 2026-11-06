@@ -1,10 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Banking.Infrastructure.Persistencia.Convertidores
+namespace Banking.Infrastructure.Persistencia.Convertidores;
+
+/// <summary>
+/// SQLite no conserva DateTimeKind: al leer, EF Core devuelve Unspecified.
+/// Todas las fechas se guardan en UTC, así que se restaura DateTimeKind.Utc al materializar.
+/// </summary>
+public sealed class ConvertidorFechaUtc : ValueConverter<DateTime, DateTime>
 {
-    internal class ConvertidorFechaUtc
+    public ConvertidorFechaUtc()
+        : base(fecha => fecha, fecha => DateTime.SpecifyKind(fecha, DateTimeKind.Utc))
     {
     }
 }
