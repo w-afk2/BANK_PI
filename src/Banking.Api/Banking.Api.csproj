@@ -19,4 +19,11 @@
     <ProjectReference Include="..\Banking.Infrastructure\Banking.Infrastructure.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<!--
+      Directorio del proyecto de la API, fijado al compilar. Se usa para resolver la ruta de
+      banking.db igual en la ejecución normal y en las herramientas de EF Core.
+    -->
+		<AssemblyMetadata Include="DirectorioProyecto" Value="$(MSBuildProjectDirectory)" />
+	</ItemGroup>
 </Project>
