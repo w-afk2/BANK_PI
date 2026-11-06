@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Comun\" />
+    <Folder Include="Entidades\" />
+  </ItemGroup>
+
 </Project>
